@@ -1,8 +1,16 @@
-$PrinterName = ""
-$InfPath = ""
-$DriverName = ""
-$PrinterIP = ""
-$OldPrinterIP = ""
+[CmdletBinding()]
+Param(
+    [Parameter(Mandatory=$true)]
+    $PrinterName,
+    [Parameter(Mandatory=$true)]
+    $InfPath,
+    [Parameter(Mandatory=$true)]
+    $DriverName,
+    [Parameter(Mandatory=$true)]
+    $PrinterIP,
+    [Parameter(Mandatory=$false)]
+    $OldPrinterIP
+)
 
 if($OldPrinterIP) {
     Get-Printer | Where-Object { $_.PortName -Like "*$($OldPrinterIP)*" } | Remove-Printer
