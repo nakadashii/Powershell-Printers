@@ -12,6 +12,21 @@ Param(
     $OldPrinterIP
 )
 
+function Configure-Printer($Printer, [String]$Name) {
+    if(-Not($null -eq $Printer)) {
+        $PrinterConfiguration = Get-PrintConfiguration -PrinterName $Printer.Name
+        if($PrinterConfiguration.Color -NotLike $false) {
+            Set-PrintConfiguration -PrinterName $Printer.Name -Color $false
+        }
+        if($PrinterConfiguration.DuplexingMode -NotLike "TwoSidedLongEdge") {
+            Set-PrintConfiguration -PrinterName $Printer.Name -DuplexingMode TwoSidedLongEdge
+        }
+        if($Printer.Name -NotLike $Name) {
+            Rename-Printer -InputObject $Printer -NewName $Name
+        }
+    }
+}
+
 if($OldPrinterIP) {
     Get-Printer | Where-Object { $_.PortName -Like "*$($OldPrinterIP)*" } | Remove-Printer
 
@@ -25,3 +40,5 @@ Add-PrinterDriver -Name $DriverName
 Add-PrinterPort -Name "IP_$($PrinterIP)" -PrinterHostAddress $PrinterIP
 
 Add-Printer -Name $PrinterName -DriverName $DriverName -PortName "IP_$($PrinterIP)"
+
+$Printer | Configure-Printer $_ $PrinterName
